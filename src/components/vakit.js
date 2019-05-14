@@ -146,9 +146,9 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   table: {
-    borderWidth: 2,
+    borderWidth: .5,
     borderColor: colors.lightOrange,
-    backgroundColor: colors.darkOrange,
+    backgroundColor: colors.orange,
     borderRadius: 10,
     maxHeight: 300
   },
