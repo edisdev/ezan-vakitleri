@@ -9,7 +9,8 @@ import Loading from './loading'
 export default class Vakit extends Component {
   state = {
     data: [],
-    isSettingData: true
+    isSettingData: true,
+    diffTime: null
   }
   componentDidMount() {
     const { vakit } = this.props
@@ -42,6 +43,10 @@ export default class Vakit extends Component {
       ],
       isSettingData: false
     })
+
+    setInterval(() => {
+      this.calculateDiffTime()
+    }, 1000);
   }
 
   calculateDiffTime() {
@@ -50,35 +55,39 @@ export default class Vakit extends Component {
     let diffTimeInfo = null
     data.forEach(vakit => {
       const falt = vakit.time.split(':') // hour : minute
-      dt2 = new Date(new Date(new Date().setHours(falt[0])).setMinutes(falt[1]))
+      dt2 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), falt[0], falt[1], 0)
       diffMinute = dt2.getMinutes() - now.getMinutes() < 0 ? (60 + (dt2.getMinutes() - now.getMinutes())) : dt2.getMinutes() - now.getMinutes()
       diffHours =  dt2.getMinutes() - now.getMinutes() < 0 ? dt2.getHours() - (now.getHours() + 1) : dt2.getHours() - now.getHours()
+      diffSecound = 60 + (dt2.getSeconds() - now.getSeconds())
+      console.log(diffSecound)
       const diff = (diffHours * 60 ) + diffMinute
       if (diff > 0 && diffTimeInfo === null) {
         diffTimeInfo = {
           timeName: vakit.name,
-          diff: diffHours === 0 ? `${diffMinute} dakika` : `${diffHours} saat ${diffMinute} dakika`
+          diff: diffHours === 0 ? `${diffMinute} dakika ${diffSecound} saniye` : `${diffHours} saat ${diffMinute} dakika ${diffSecound} saniye`
         }
         return 
       }
+    })
+    this.setState({
+      diffTime: diffTimeInfo
     })
     return diffTimeInfo
   }
 
   renderItem = ({ item }) => {
-    const diffTime = this.calculateDiffTime()
+    const { diffTime } = this.state
     return (
-      <View style={[styles.row, !diffTime ? styles.activeBgColor: '']}>
-        <Text style={[styles.col, !diffTime ? styles.activeTextColor: '']}>{item.name}</Text>
-        <Text style={[styles.col, styles.time, !diffTime ? styles.activeTextColor: '']}>{item.time}</Text>
+      <View style={[styles.row, diffTime ? styles.activeBgColor: '']}>
+        <Text style={[styles.col, diffTime ? styles.activeTextColor: '']}>{item.name}</Text>
+        <Text style={[styles.col, styles.time, diffTime ? styles.activeTextColor: '']}>{item.time}</Text>
       </View>
     )
   }
 
   render() {
     const { vakit, isToday } = this.props
-    const { isSettingData , data } = this.state
-    const diffTime = this.calculateDiffTime()
+    const { isSettingData, data, diffTime } = this.state
     return (
       <View>
         {
