@@ -1,0 +1,3 @@
+rootProject.name = 'SahurIftarVakti'
+
+include ':app'
